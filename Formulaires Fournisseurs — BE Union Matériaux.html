@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Formulaires Fournisseurs — BE Union Matériaux</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EDE6;min-height:100vh;color:#1A1A1A;font-size:13px}
+/* HEADER */
+.hd{background:#3A4E1E;color:#fff;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hb{display:flex;align-items:center;gap:11px}
+.lg{width:36px;height:36px;background:#C8A84B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}
+.ht{font-size:15px;font-weight:700}.hs{font-size:11px;opacity:.7;margin-top:1px}
+.hbg{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:11px}
+/* STEPS */
+.stps{background:#fff;border-bottom:1px solid #E0DDD7;display:flex;padding:0 22px}
+.stp{padding:11px 14px;font-size:12px;font-weight:500;color:#bbb;border-bottom:2px solid transparent;display:flex;align-items:center;gap:5px}
+.stp.act{color:#3A4E1E;border-bottom-color:#3A4E1E;font-weight:700}
+.stp.dn{color:#526227}
+.sn{width:19px;height:19px;border-radius:50%;background:#EEE;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.stp.act .sn{background:#3A4E1E;color:#fff}.stp.dn .sn{background:#ECF5E2;color:#3A4E1E}
+/* CARDS */
+.ct{max-width:960px;margin:0 auto;padding:18px 14px 90px}
+.card{background:#fff;border-radius:12px;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.ch{padding:11px 18px;display:flex;align-items:center;gap:8px}
+.ch h2{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.cb{padding:14px 18px}
+.si .ch{background:#3A4E1E;color:#fff}
+.sz .ch{background:#526227;color:#fff}
+.sf .ch{background:#C8A84B;color:#fff}
+.sn2 .ch{background:#526227;color:#fff}
+.so .ch{background:#526227;color:#fff}
+.sfm .ch{background:#1B5E8C;color:#fff}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 14px}
+/* FIELDS */
+.fd{display:flex;flex-direction:column;gap:3px}
+.fd label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px}
+input,select{border:1.5px solid #D8D5CF;border-radius:8px;padding:7px 10px;font-size:13px;color:#1A1A1A;background:#fff;font-family:inherit;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus{border-color:#3A4E1E;box-shadow:0 0 0 2px rgba(58,78,30,.08)}
+input.au{background:#E6F3FC;color:#154E6E;font-weight:600;border-color:#B0CFEA}
+input.ca{background:#E8F7DA;color:#295210;font-weight:700;border-color:#B4D490}
+input[readonly]{cursor:default}
+/* FOURNISSEUR TOGGLES */
+.fg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fc{border:2px solid #D8D5CF;border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;background:#fff;transition:all .15s;user-select:none}
+.fc:hover{border-color:#526227;background:#F3F7EC}
+.fc.on{border-color:#3A4E1E;background:#ECF5E2}
+
+.fck{width:18px;height:18px;border-radius:50%;border:2px solid #D8D5CF;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .15s;flex-shrink:0}
+.fc.on .fck{background:#3A4E1E;border-color:#3A4E1E;color:#fff}
+
+.fcl{font-size:12px;font-weight:500;color:#888;transition:color .15s}
+.fc.on .fcl{color:#3A4E1E;font-weight:700}
+
+/* NIVEAUX TABLE */
+#niv-table-wrap table{width:100%;border-collapse:collapse}
+#niv-table-wrap th{background:#4E5F24;color:#fff;padding:8px 8px;font-size:11px;font-weight:600;text-align:left}
+#niv-table-wrap th:first-child{border-radius:6px 0 0 6px}
+#niv-table-wrap th:last-child{border-radius:0 6px 6px 0}
+#niv-table-wrap td{padding:4px 3px;border-bottom:1px solid #F3F0EA}
+#niv-table-wrap tr:last-child td{border-bottom:none}
+.nl{font-size:12px;font-weight:600;color:#526227;padding:0 5px;white-space:nowrap}
+.ns{border:1.5px solid #D8D5CF;border-radius:6px;padding:6px 7px;font-size:12px;background:#fff;font-family:inherit;outline:none;width:100%}
+.ns:focus{border-color:#3A4E1E}
+/* DISABLED — triple-verrou pour tous navigateurs */
+.ns[disabled],.ns.dis{
+  pointer-events:none !important;
+  opacity:0.32 !important;
+  background:#EDEBE6 !important;
+  color:#AAA !important;
+  cursor:not-allowed !important;
+  border-color:#E0DDD7 !important;
+}
+/* BUTTONS */
+.btn{border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:inherit}
+.bp{background:#3A4E1E;color:#fff}.bp:hover{background:#2C3C16}
+.bs{background:#fff;color:#3A4E1E;border:2px solid #3A4E1E}.bs:hover{background:#F3F7EC}
+.bo{background:#C8A84B;color:#fff}.bo:hover{background:#B09038}
+.bsm{padding:6px 13px;font-size:12px}
+.ab{background:#fff;border-top:1px solid #E0DDD7;padding:13px 22px;display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:50}
+/* FICHE VIEW */
+.fl{display:grid;grid-template-columns:175px 1fr;gap:14px}
+.fsb{display:flex;flex-direction:column;gap:4px}
+.ft{padding:9px 13px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#777;background:#fff;border:1.5px solid #E0DDD7;transition:all .15s}
+.ft:hover{background:#F3F7EC;border-color:#526227}
+.ft.act{background:#3A4E1E;color:#fff;border-color:#3A4E1E;font-weight:700}
+
+.fcard{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.09)}
+.ftb{background:#3A4E1E;color:#fff;padding:15px 19px;display:flex;justify-content:space-between;align-items:center}
+
+.ftb h1{font-size:15px;font-weight:700;letter-spacing:.3px}
+.ftb p{font-size:11px;opacity:.7;margin-top:2px}
+.fsh{padding:8px 16px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.fsh.g{background:#4E5F24;color:#fff}
+.fsh.or{background:#C8A84B;color:#fff}
+
+.idg{display:grid;grid-template-columns:1fr 1fr}
+.il{background:#F3EFE7;padding:8px 14px;font-size:11px;font-weight:600;color:#5C5650;border-bottom:1px solid #EDE8E0}
+.iv{padding:8px 14px;font-size:12px;border-bottom:1px solid #EDE8E0;background:#fff}
+.iv.a{background:#E6F3FC;color:#154E6E;font-weight:500}
+.iv.c{background:#E8F7DA;color:#295210;font-weight:700}
+.fnt{width:100%;border-collapse:collapse;font-size:12px}
+.fnt th{background:#ECF5E2;color:#295210;padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-bottom:2px solid #B4D490}
+.fnt td{padding:8px 12px;border-bottom:1px solid #F5F2EC}
+.fnt tr:last-child td{border-bottom:none}
+.fnt tr:hover td{background:#FAFAF8}
+.pn{font-weight:600;color:#526227}.pm{color:#1A1A1A}.pauc{color:#CCC;font-style:italic}
+.pu,.pr{background:#E6F3FC;color:#154E6E;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:500}
+.pmw{background:#3A4E1E;color:#fff;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.pwn{background:#FFF3CD;color:#856404;padding:2px 6px;border-radius:4px;font-size:10px}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 16px}
+.or2{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:#F9F9F7;border-radius:6px}
+.ol{font-size:12px;color:#5C5650;font-weight:500}
+.os{border:1px solid #D8D5CF;border-radius:5px;padding:4px 8px;font-size:12px;font-family:inherit;outline:none;background:#fff}
+.nt2{font-size:10.5px;color:#888;font-style:italic}
+.lgnote{padding:10px 16px;font-size:10px;color:#888;background:#F9F9F7;border-top:1px solid #F0EDE6}
+/* FERMETTE FORM */
+.fm-sec{padding:12px 0 6px;border-top:1px solid #F0EDE6;margin-top:10px}
+.fm-sec:first-child{border-top:none;margin-top:0;padding-top:0}
+.fm-sec-h{font-size:10px;font-weight:700;color:#1B5E8C;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.chk-row{display:flex;flex-wrap:wrap;gap:12px}
+.chk-lbl{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;font-weight:500;color:#333;user-select:none}
+.chk-lbl input[type=checkbox]{width:auto;accent-color:#3A4E1E}
+.alert-box{margin-top:8px;padding:7px 10px;background:#FFF3CD;border-radius:6px;font-size:11px;color:#856404;font-weight:500}
+
+.obs-ta{width:100%;min-height:75px;border:none;border-top:1px solid #F0EDE6;resize:vertical;padding:13px 16px;font-size:12px;font-family:inherit;color:#333;background:#FAFAF8;outline:none;line-height:1.6;display:block}
+.obs-ta::placeholder{color:#CCC;font-style:italic}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{size:A4 portrait;margin:1cm 1.2cm}
+  body{background:#fff!important;font-size:10px!important}
+  .hd,.stps,.ab,.fsb,.lgnote,.btn{display:none!important}
+  .ct{padding:0!important;max-width:100%!important}
+  .fl{display:block!important}
+  .fcard{box-shadow:none!important;border:1px solid #CCC!important;border-radius:4px!important}
+  .ftb{padding:9px 13px!important}
+  .ftb h1{font-size:12.5px!important;letter-spacing:.2px!important}
+  .ftb p{font-size:9.5px!important}
+  .ftb > div:last-child{font-size:10px!important;padding:5px 9px!important}
+  .fsh{padding:5px 13px!important;font-size:8.5px!important;letter-spacing:.4px}
+  .idg{grid-template-columns:1fr 1fr!important}
+  .il{padding:4px 10px!important;font-size:9.5px!important}
+  .iv{padding:4px 10px!important;font-size:10px!important}
+  .fnt{font-size:9.5px!important}
+  .fnt th{padding:5px 9px!important;font-size:8.5px!important}
+  .fnt td{padding:5px 9px!important}
+  .og{padding:6px 12px!important;gap:4px!important}
+  .or2{padding:4px 8px!important}
+  .ol{font-size:9.5px!important}
+  .os{font-size:9.5px!important;padding:2px 5px!important;border-radius:3px!important}
+  div[style*="min-height:55px"]{padding:8px 13px!important;min-height:35px!important;font-size:9.5px!important}
+  .obs-ta{font-size:9.5px!important;min-height:40px!important;padding:8px 13px!important;border:1px solid #DDD!important}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── DONNÉES ──────────────────────────────────────────────────────────────────
+const FL={KP1:'KP1',NEO:'NEO / FABRE',FABEMI:'FABEMI',SEAC:'SEAC',RECTOR:'RECTOR',ISOLTOP:'ISOLTOP',FERMETTE:'Fermette'};
+const NL=['Vide sanitaire (VS)','HT Sous-sol','HT RDC','HT Étage','Toit Terrasse'];
+const TO=['Aucun (niveau non concerné)','Polystyrène isolant','Polystyrène sans rupteur','Entrevous béton','Coffrant bas niveaux (VS/SS)','Coffrant niveaux supérieurs','Coffrant sous-sol spécial'];
+const UO=['','11','13','14','15','16','18','19','23','27','30','36','39'];
+const RO=['','Sans rupteur','T','T+L','T+R','T+L+R'];
+const MAP={
+  'Polystyrène isolant':         {KP1:'Isoleader',NEO:'Polystyrène isolant',FABEMI:'Polystyrène isolant',SEAC:'Polystyrène isolant',RECTOR:'Rectosten',ISOLTOP:'Hourdis isolant'},
+  'Polystyrène sans rupteur':    {KP1:'Isoleader',NEO:'Polystyrène isolant',FABEMI:'Polystyrène isolant',SEAC:'Polystyrène isolant',RECTOR:'Rectosten',ISOLTOP:'Hourdis isolant'},
+  'Entrevous béton':             {KP1:'Béton',NEO:'Hourdis béton',FABEMI:'Béton',SEAC:'Béton',RECTOR:'Hourdis béton',ISOLTOP:'—'},
+  'Coffrant bas niveaux (VS/SS)':{KP1:'EMS/EMX',NEO:'Plastivoute',FABEMI:'Optiraid',SEAC:'EBS',RECTOR:'Rectolight',ISOLTOP:'Hourdinov Décaissé'},
+  'Coffrant niveaux supérieurs': {KP1:'EMS/EMX',NEO:'Fabribois étage',FABEMI:'Optiraid',SEAC:'EBS',RECTOR:'Rectolight',ISOLTOP:'Hourdinov Décaissé'},
+  'Coffrant sous-sol spécial':   {KP1:'Isorupteur/SPX',NEO:'Neostrène coffrant',FABEMI:'—',SEAC:'EBS',RECTOR:'—',ISOLTOP:'Hourdinov Plein M1'},
+  'Aucun (niveau non concerné)': {KP1:null,NEO:null,FABEMI:null,SEAC:null,RECTOR:null,ISOLTOP:null}
+};
+const MW={'UP39|T':31,'UP39|T+L':29,'UP39|T+R':29,'UP39|T+L+R':26,'UP27|T':22,'UP27|T+L':19,'UP27|T+R':19,'UP27|T+L+R':16,'UP23|T':18,'UP23|T+L':14,'UP23|T+R':14,'UP23|T+L+R':11,'UP18|T':14,'UP18|T+L':11,'UP18|T+R':11,'UP18|T+L+R':8,'UP14|T':11,'UP14|T+L':7,'UP14|T+R':7,'UP14|T+L+R':4};
+const ZS={'04':'4 - Moyenne','06':'3 - Modérée','07':'3 - Modérée','09':'2 - Faible','11':'2 - Faible','13':'4 - Moyenne','26':'3 - Modérée','30':'2 - Faible','31':'1 - Très faible','34':'2 - Faible','48':'2 - Faible','66':'2 - Faible','81':'2 - Faible','83':'3 - Modérée','84':'3 - Modérée'};
+const ZV={'04':'1','06':'2','07':'2','09':'2','11':'3','13':'3','26':'2','30':'2','31':'1','34':'3','48':'2','66':'3','81':'2','83':'2','84':'2'};
+const ZN={'04':'C1','06':'A2','07':'C2','09':'A2','11':'D','13':'A2','26':'C2','30':'B2','31':'A2','34':'B2','48':'A2','66':'D','81':'A2','83':'A2','84':'B2'};
+const ZC={'04':'H2','06':'H3','07':'H2','09':'H2','11':'H3','13':'H3','26':'H2','30':'H3','31':'H2','34':'H3','48':'H2','66':'H3','81':'H2','83':'H3','84':'H2'};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let S={
+  view:'form', activeF:'KP1',
+  dossier:{ref:'',nom:'',agence:'',atc:'',metreur:'',adresse:'',ville:'',cp:'',entreprise:'',reponse:''},
+  four:{KP1:false,NEO:false,FABEMI:false,SEAC:false,RECTOR:false,ISOLTOP:false,FERMETTE:false},
+  niveaux:NL.map(n=>({nom:n,type:'Aucun (niveau non concerné)',up:'',rupteur:''})),
+  opts:{KP1:{kitFer:'Oui',tremie:'Oui'},NEO:{kitFer:'Oui',tremie:'Oui'},FABEMI:{poutrelles:'Non',planelles:'Non',hoBeton:'Non',hoPolystyrene:'Non'},SEAC:{},RECTOR:{kitFer:'Oui',tremie:'Oui'},ISOLTOP:{kitAcier:'Oui',tremie:'Oui'}},
+  obs:{KP1:'',NEO:'',FABEMI:'',SEAC:'',RECTOR:'',ISOLTOP:'',FERMETTE:''},
+  infos:{pose:'',etaiement:'Sans étai',garage:false,terrasse:false,exploitation:'Habitation 150 daN/m²',revetement:'Carrelage collé',cloisons:'Plaque de plâtre (légère)',charges:''},
+  fermette:{pente:'',tuile:'Mécanique',sandwich:false,murs:20,plafond:'BA13',laine:'',miMur:false,genoise:'',debord:false,typeDebord:'Plat',cote:'',cheminee:false,tradi:false,zBrute:'',zRabote:'',metal:true,contrev:true,liteau:true,demiLiteaux:false,film:false,osb:false}
+};
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function gz(){const d=S.dossier.cp.slice(0,2);return{s:ZS[d]||'',v:ZV[d]?`Zone ${ZV[d]}`:'',n:ZN[d]||'',c:ZC[d]||''};}
+function gsel(){return Object.keys(S.four).filter(k=>S.four[k]);}
+function gmap(f,niv){
+  const{type,up,rupteur}=niv;const m=MAP[type];
+  if(!m)return{p:null,u:'',r:'',mw:''};
+  const prod=m[f];if(!prod)return{p:null,u:'',r:'',mw:''};
+  const isP=type.startsWith('Polystyrène');
+  const u=isP?up:'';
+  let r='';
+  if(f==='KP1'){
+    // KP1 : type exact pour polystyrène (T/T+L…), Oui/Non sinon
+    r=rupteur||'';
+  } else if(isP){
+    // Autres fournisseurs polystyrène : Oui/Non depuis type T/T+L ou depuis Oui/Non direct
+    if(!rupteur)r='';
+    else if(rupteur==='Non'||rupteur==='Sans rupteur')r='Non';
+    else r='Oui'; // T / T+L / T+R / T+L+R / Oui → Oui
+  } else {
+    // Type non-polystyrène : Oui/Non direct
+    r=rupteur||'';
+  }
+  let mw='';
+  // Milliwatt KP1 : uniquement si Isoleader + type rupteur précis (T/T+L/…)
+  const isRuptType=['T','T+L','T+R','T+L+R'].includes(rupteur);
+  if(f==='KP1'&&prod==='Isoleader'&&u&&isRuptType)mw=MW[`UP${u}|${rupteur}`]||'?';
+  return{p:prod,u,r,mw};
+}
+function h(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function sopt(arr,cur){return arr.map(o=>`<option${o===cur?' selected':''}>${o}</option>`).join('');}
+
+// ─── RENDER NIVEAUX TABLE (ciblé, sans perte de focus) ───────────────────────
+function renderNivTable(){
+  return`<table>
+    <thead><tr><th style="width:22%">Niveau</th><th style="width:34%">Type d'entrevous</th><th style="width:14%">UP</th><th style="width:30%">Type rupteur</th></tr></thead>
+    <tbody>${S.niveaux.map((niv,i)=>{
+      const isP=niv.type.startsWith('Polystyrène');
+      const isPI=niv.type==='Polystyrène isolant';
+      // UP : seulement pour polystyrène | Rupteur : toujours, options selon type
+      const ruptOpts=isPI?RO:['','Oui','Non'];
+      return`<tr>
+        <td><span class="nl">${niv.nom}</span></td>
+        <td><select class="ns" data-niv="${i}" data-nk="type">${sopt(TO,niv.type)}</select></td>
+        <td>${isP?`<select class="ns" data-niv="${i}" data-nk="up">${sopt(UO,niv.up)}</select>`:`<div class="niv-na">—</div>`}</td>
+        <td><select class="ns" data-niv="${i}" data-nk="rupteur">${sopt(ruptOpts,niv.rupteur)}</select></td>
+      </tr>`;}).join('')}
+    </tbody>
+  </table>`;
+}
+
+// ─── RENDER FOURNISSEUR CARDS ─────────────────────────────────────────────────
+function renderFourCards(){
+  return Object.keys(FL).map(k=>{
+    const isFer=k==='FERMETTE';
+    return`<div class="fc ${isFer?'fm':''} ${S.four[k]?'on':''}" data-four="${k}">
+      <div class="fck">${S.four[k]?'✓':''}</div>
+      <span class="fcl">${FL[k]}</span>
+    </div>`;}).join('');
+}
+
+// ─── RENDER FORM ──────────────────────────────────────────────────────────────
+function renderForm(){
+  const zv=gz();const sv=gsel();
+  const f=S.fermette;
+  return`
+<div class="hd">
+  <div class="hb"><img src="data:image/png;base64,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" alt="UM" style="height:34px"><div><div class="ht">UNION MATÉRIAUX — Bureau d'Études</div><div class="hs">Formulaires fournisseurs plancher · Saisie commune</div></div></div>
+  <div class="hbg">V2 · 2026</div>
+</div>
+<div class="stps">
+  <div class="stp act"><div class="sn">1</div>Saisie commune</div>
+  <div class="stp"><div class="sn">2</div>Fiches fournisseurs</div>
+</div>
+<div class="ct">
+
+  <div class="card si">
+    <div class="ch"><h2>📋 Identification du dossier</h2></div>
+    <div class="cb">
+      <div class="g3" style="margin-bottom:10px">
+        <div class="fd"><label>Référence chantier</label><input df="ref" value="${h(S.dossier.ref)}" placeholder="REF-2026-XXX"></div>
+        <div class="fd"><label>Nom affaire / Client</label><input df="nom" value="${h(S.dossier.nom)}" placeholder="Construction Dupont"></div>
+        <div class="fd"><label>Agence Union Matériaux</label><input df="agence" value="${h(S.dossier.agence)}" placeholder="Montpellier"></div>
+      </div>
+      <div class="g3" style="margin-bottom:10px">
+        <div class="fd"><label>ATC / Commercial</label><input df="atc" value="${h(S.dossier.atc)}" placeholder="Nom commercial"></div>
+        <div class="fd"><label>Métreur BE</label><input df="metreur" value="${h(S.dossier.metreur)}" placeholder="Alexandre ALBY"></div>
+        <div class="fd"><label>Entreprise / Constructeur</label><input df="entreprise" value="${h(S.dossier.entreprise)}" placeholder="Maison Provence SAS"></div>
+      </div>
+      <div class="g3">
+        <div class="fd"><label>Adresse chantier</label><input df="adresse" value="${h(S.dossier.adresse)}" placeholder="12 rue des Pins"></div>
+        <div class="fd"><label>Ville</label><input df="ville" value="${h(S.dossier.ville)}" placeholder="Perpignan"></div>
+        <div class="fd"><label>Code postal</label><input id="inp-cp" df="cp" value="${h(S.dossier.cp)}" placeholder="66000" maxlength="5" inputmode="numeric"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card sz">
+    <div class="ch"><h2>🗺️ Zones automatiques depuis le CP</h2></div>
+    <div class="cb">
+      <div class="g2" style="gap:10px">
+        <div class="fd"><label>Zone sismique (auto commune)</label><input class="ca" readonly id="z-s" value="${zv.s||(S.dossier.cp.length>=2?'⚠ Hors périmètre':'Saisir le CP →')}"></div>
+        <div class="fd"><label>Phase projet</label><select di="phase"><option>Étude</option><option>AO</option><option>ADJ</option><option>EXE</option><option>Commande</option></select></div>
+        <div class="fd"><label>Zone vent (EN1991-1-4)</label><input class="au" readonly id="z-v" value="${zv.v||'—'}"></div>
+        <div class="fd"><label>Zone neige (EN1991-1-3)</label><input class="au" readonly id="z-n" value="${zv.n||'—'}"></div>
+        <div class="fd"><label>Zone climatique RE2020</label><input class="au" readonly id="z-c" value="${zv.c||'—'}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card sf">
+    <div class="ch"><h2>🏭 Fournisseurs concernés par ce dossier</h2></div>
+    <div class="cb">
+      <div class="fg" id="four-cards">${renderFourCards()}</div>
+      <div style="margin-top:9px;padding:7px 12px;background:${sv.length?'#ECF5E2':'#F9F9F7'};border-radius:6px;font-size:11px;color:${sv.length?'#295210':'#AAA'};font-weight:${sv.length?600:400}">
+        ${sv.length?`✓ Sélectionnés : ${sv.map(k=>FL[k]).join(' · ')}`:'Cocher au moins un fournisseur'}
+      </div>
+    </div>
+  </div>
+
+  <div class="card sn2">
+    <div class="ch"><h2>📐 Détail technique par niveau — propagé vers toutes les fiches plancher</h2></div>
+    <div class="cb" style="padding:0 18px 14px">
+      <div style="padding:9px 0 7px;font-size:11px;color:#666">💡 Saisir ici une seule fois — le produit exact de chaque fournisseur est calculé automatiquement</div>
+      <div id="niv-table-wrap">${renderNivTable()}</div>
+    </div>
+  </div>
+
+  <div class="card so">
+    <div class="ch"><h2>⚖️ Informations communes plancher</h2></div>
+    <div class="cb">
+      <div class="g3" style="margin-bottom:10px">
+        <div class="fd"><label>Type de pose poutre</label><select di="pose"><option value="">—</option><option>Poutres industrielles</option><option>Poutres Manuportables</option><option>Coulées en place</option><option>Longrines préfa</option></select></div>
+        <div class="fd"><label>Étaiement</label><select di="etaiement"><option>Sans étai</option><option>Avec étais</option></select></div>
+        <div class="fd"><label>Type d'exploitation</label><select di="exploitation"><option>Habitation 150 daN/m²</option><option>Bureaux 250 daN/m²</option><option>Garage 250 daN/m²</option><option>Autre</option></select></div>
+      </div>
+      <div class="g3">
+        <div class="fd"><label>Revêtement de sol</label><select di="revetement"><option value="">—</option><option>Carrelage scellé</option><option selected>Carrelage collé</option><option>Dalle flottante</option><option>Parquet flottant</option><option>Plancher chauffant</option></select></div>
+        <div class="fd"><label>Cloisons</label><select di="cloisons"><option value="">—</option><option selected>Plaque de plâtre (légère)</option><option>Brique 5cm (lourde)</option><option>Sans cloisons</option></select></div>
+        <div class="fd"><label>Options</label><div style="display:flex;gap:14px;margin-top:6px">
+          <label class="chk-lbl"><input type="checkbox" dib="garage" ${S.infos.garage?'checked':''}> Garage</label>
+          <label class="chk-lbl"><input type="checkbox" dib="terrasse" ${S.infos.terrasse?'checked':''}> Terrasse</label>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FERMETTE — visible si FERMETTE sélectionné -->
+  <div class="card sfm" id="card-fermette" style="${S.four.FERMETTE?'':'display:none'}">
+    <div class="ch"><h2>🏠 Informations Fermette — Charpente</h2></div>
+    <div class="cb">
+      <div class="fm-sec">
+        <div class="fm-sec-h">Hypothèses de calcul</div>
+        <div class="g3" style="margin-bottom:10px">
+          <div class="fd"><label>Pente (%)</label><input df2="pente" value="${f.pente}" placeholder="30"></div>
+          <div class="fd"><label>Type de tuile</label><select df2="tuile"><option ${f.tuile==='Canal'?'selected':''}>Canal</option><option ${f.tuile==='Mécanique'?'selected':''} selected>Mécanique</option></select></div>
+          <div class="fd"><label>Panneaux sandwich</label><select df2-b="sandwich"><option value="0" ${!f.sandwich?'selected':''}>Non</option><option value="1" ${f.sandwich?'selected':''}>Oui</option></select></div>
+        </div>
+        <div class="g3">
+          <div class="fd"><label>Épaisseur murs (cm)</label><input df2="murs" value="${f.murs}" placeholder="20"></div>
+          <div class="fd"><label>Type de plafond</label><input class="ca" readonly value="BA13"></div>
+          <div class="fd"><label>Épaisseur laine (cm)</label><input df2="laine" value="${f.laine}" placeholder="ex: 10"></div>
+        </div>
+      </div>
+      <div class="fm-sec">
+        <div class="fm-sec-h">Pied de ferme — charpente</div>
+        <div class="g3" style="margin-bottom:10px">
+          <div class="fd"><label>Pose mi-mur</label><select df2-b="miMur"><option value="0" ${!f.miMur?'selected':''}>Non</option><option value="1" ${f.miMur?'selected':''}>Oui</option></select></div>
+          <div class="fd"><label>Type de génoise</label><select df2="genoise"><option value="">—</option><option ${f.genoise==='1 rang génoise'?'selected':''}>1 rang génoise</option><option ${f.genoise==='2 rang génoise'?'selected':''}>2 rang génoise</option><option ${f.genoise==='1 brique de 7'?'selected':''}>1 brique de 7</option><option ${f.genoise==='1 brique de 10'?'selected':''}>1 brique de 10</option></select></div>
+          <div class="fd"><label>Débord</label><select df2-b="debord"><option value="0" ${!f.debord?'selected':''}>Non</option><option value="1" ${f.debord?'selected':''}>Oui</option></select></div>
+        </div>
+        <div class="g3">
+          <div class="fd"><label>Type de débord</label><select df2="typeDebord"><option value="">—</option><option>Plat</option><option>Queue de vache</option></select></div>
+          <div class="fd"><label>Cote de débord (cm)</label><input df2="cote" value="${f.cote}" placeholder="ex: 40"></div>
+        </div>
+      </div>
+      <div class="fm-sec">
+        <div class="fm-sec-h">Informations</div>
+        <div class="chk-row" style="margin-bottom:8px">
+          <label class="chk-lbl"><input type="checkbox" df2-b="cheminee" ${f.cheminee?'checked':''}> Conduit cheminée</label>
+          <label class="chk-lbl"><input type="checkbox" df2-b="tradi" ${f.tradi?'checked':''}> Partie tradi</label>
+        </div>
+        <div class="g2">
+          <div class="fd"><label>Zone tradi brute</label><input df2="zBrute" value="${f.zBrute}" placeholder="Préciser si tradi"></div>
+          <div class="fd"><label>Zone tradi raboté</label><input df2="zRabote" value="${f.zRabote}" placeholder="Préciser si tradi"></div>
+        </div>
+      </div>
+      <div class="fm-sec">
+        <div class="fm-sec-h">Accessoires</div>
+        <div class="chk-row">
+          <label class="chk-lbl"><input type="checkbox" df2-b="metal" ${f.metal?'checked':''}> Accessoires métalliques</label>
+          <label class="chk-lbl"><input type="checkbox" df2-b="contrev" ${f.contrev?'checked':''}> Contreventement</label>
+          <label class="chk-lbl"><input type="checkbox" df2-b="liteau" ${f.liteau?'checked':''}> Liteau</label>
+          <label class="chk-lbl"><input type="checkbox" df2-b="demiLiteaux" ${f.demiLiteaux?'checked':''}> Demi-liteaux</label>
+          <label class="chk-lbl"><input type="checkbox" df2-b="film" ${f.film?'checked':''}> Film sous toiture</label>
+          <label class="chk-lbl"><input type="checkbox" df2-b="osb" ${f.osb?'checked':''}> OSB 12mm</label>
+        </div>
+        ${(f.film||f.osb)&&!f.demiLiteaux?`<div class="alert-box">⚠️ Film et/ou OSB sélectionné — les Demi-liteaux sont obligatoires</div>`:''}
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="ab">
+  <div style="font-size:12px;color:#C8A84B;font-weight:500">${sv.length===0?'⚠ Sélectionner au moins un fournisseur':''}</div>
+  <button class="btn bp" id="btngen" ${sv.length===0?'disabled style="opacity:.4;cursor:not-allowed"':''}>Générer les fiches fournisseurs →</button>
+</div>`;
+}
+
+// ─── RENDER FICHES ────────────────────────────────────────────────────────────
+function renderFiches(){
+  const sv=gsel();
+  if(!sv.includes(S.activeF)&&sv.length)S.activeF=sv[0];
+  const af=S.activeF;
+  const zv=gz();const d=S.dossier;const today=new Date().toLocaleDateString('fr-FR');
+  const isFer=af==='FERMETTE';
+  const f=S.fermette;
+
+  // ── Plancher fiche ──
+  let ficheBody='';
+  if(!isFer){
+    const nivRows=S.niveaux.map((niv,i)=>{
+      const{p,u,r,mw}=gmap(af,niv);
+      const isO=!p;
+      const isoW=af==='ISOLTOP'&&p==='Hourdis isolant'&&i>=2;
+      const upW=af==='ISOLTOP'&&u&&!['13','16','19','23'].includes(u);
+      return`<tr>
+        <td><span class="pn">${niv.nom}</span></td>
+        <td>${isO?`<span class="pauc">—</span>`:`<span class="pm">${p}</span>${isoW?` <span class="pwn">⚠ VS/SS seulement</span>`:''}`}</td>
+        <td>${u?`<span class="pu">UP ${u}</span>${upW?` <span class="pwn">⚠</span>`:''}`:''}</td>
+        <td>${r&&r!=='—'?`<span class="pr">${r}</span>`:''}</td>
+        ${af==='KP1'?`<td>${mw?`<span class="pmw">${mw} mW</span>`:''}</td>`:''}
+      </tr>`;}).join('');
+
+    const o=S.opts[af]||{};
+    let optH='';
+    if(af==='KP1'||af==='NEO'||af==='RECTOR'){
+      optH=`<div class="fsh or">Options dossier — saisie manuelle</div>
+      <div class="og">
+        <div class="or2"><span class="ol">Kit fer à chiffrer</span><select class="os" data-opt="${af}" data-ok="kitFer"><option ${o.kitFer!=='Oui'?'selected':''}>Non</option><option ${o.kitFer==='Oui'?'selected':''}>Oui</option></select></div>
+        <div class="or2"><span class="ol">Trémie à chiffrer</span><select class="os" data-opt="${af}" data-ok="tremie"><option ${o.tremie!=='Oui'?'selected':''}>Non</option><option ${o.tremie==='Oui'?'selected':''}>Oui</option></select></div>
+      </div>`;
+    }else if(af==='FABEMI'){
+      optH=`<div class="fsh or">Quoi chiffrer dans le devis</div>
+      <div class="og">
+        <div class="or2"><span class="ol">Poutrelles</span><select class="os" data-opt="FABEMI" data-ok="poutrelles"><option ${o.poutrelles!=='Oui'?'selected':''}>Non</option><option ${o.poutrelles==='Oui'?'selected':''}>Oui</option></select></div>
+        <div class="or2"><span class="ol">Planelles</span><select class="os" data-opt="FABEMI" data-ok="planelles"><option ${o.planelles!=='Oui'?'selected':''}>Non</option><option ${o.planelles==='Oui'?'selected':''}>Oui</option></select></div>
+        <div class="or2"><span class="ol">Hourdis béton</span><select class="os" data-opt="FABEMI" data-ok="hoBeton"><option ${o.hoBeton!=='Oui'?'selected':''}>Non</option><option ${o.hoBeton==='Oui'?'selected':''}>Oui</option></select></div>
+        <div class="or2"><span class="ol">Hourdis polystyrène</span><select class="os" data-opt="FABEMI" data-ok="hoPolystyrene"><option ${o.hoPolystyrene!=='Oui'?'selected':''}>Non</option><option ${o.hoPolystyrene==='Oui'?'selected':''}>Oui</option></select></div>
+      </div>`;
+    }else if(af==='ISOLTOP'){
+      optH=`<div class="fsh or">Options dossier — saisie manuelle</div>
+      <div class="og">
+        <div class="or2"><span class="ol">Kit acier complet</span><select class="os" data-opt="ISOLTOP" data-ok="kitAcier"><option ${o.kitAcier!=='Oui'?'selected':''}>Non</option><option ${o.kitAcier==='Oui'?'selected':''}>Oui</option></select></div>
+        <div class="or2"><span class="ol">Trémie à chiffrer</span><select class="os" data-opt="ISOLTOP" data-ok="tremie"><option ${o.tremie!=='Oui'?'selected':''}>Non</option><option ${o.tremie==='Oui'?'selected':''}>Oui</option></select></div>
+      </div>`;
+    }
+
+    ficheBody=`
+    <div class="fsh g">Identification du dossier</div>
+    <div class="idg">
+      <div class="il">Nom de l'affaire</div><div class="iv a">${d.nom||'—'}</div>
+      <div class="il">N° / Référence</div><div class="iv a">${d.ref||'—'}</div>
+      <div class="il">Agence UM</div><div class="iv a">${d.agence||'—'}</div>
+      <div class="il">ATC / Commercial</div><div class="iv a">${d.atc||'—'}</div>
+      <div class="il">Métreur BE</div><div class="iv a">${d.metreur||'—'}</div>
+      <div class="il">Entreprise</div><div class="iv a">${d.entreprise||'—'}</div>
+      <div class="il">CP + Commune</div><div class="iv a">${[d.cp,d.ville].filter(Boolean).join(' ')||'—'}</div>
+      <div class="il">Zone sismique</div><div class="iv c">${zv.s||'—'}</div>
+    </div>
+    <div class="fsh g">Détail technique par niveau — ${af==='NEO'?'NEO/FABRE':af}</div>
+    <div style="padding:0 16px 4px">
+      <table class="fnt" style="margin:10px 0">
+        <thead><tr><th>Niveau</th><th>Produit</th><th>UP</th><th>${af==='KP1'?'Type rupteur':'Rupteur'}</th>${af==='KP1'?'<th>Milliwatt</th>':''}</tr></thead>
+        <tbody>${nivRows}</tbody>
+      </table>
+    </div>
+    ${optH}
+    <div class="fsh g">Pose &amp; Charges (→ Saisie Commune)</div>
+    <div class="idg">
+      <div class="il">Type de pose</div><div class="iv a">${S.infos.pose||'—'}</div>
+      <div class="il">Étaiement</div><div class="iv a">${S.infos.etaiement}</div>
+      <div class="il">Type d'exploitation</div><div class="iv a">${S.infos.exploitation}</div>
+      <div class="il">Revêtement de sol</div><div class="iv a">${S.infos.revetement||'—'}</div>
+      <div class="il">Cloisons</div><div class="iv a">${S.infos.cloisons||'—'}</div>
+      <div class="il">Garage et/ou terrasse sur VS</div><div class="iv a">${[S.infos.garage?'Garage':'',S.infos.terrasse?'Terrasse':''].filter(Boolean).join(' + ')||'Non'}</div>
+    </div>`;
+  } else {
+    // ── Fermette fiche ──
+    const acRow=(l,v,cls='a')=>`<div class="il">${l}</div><div class="iv ${cls}">${v||'—'}</div>`;
+    ficheBody=`
+    <div class="fsh g">Identification du dossier</div>
+    <div class="idg">
+      ${acRow("Nom de l'affaire",d.nom)}${acRow('N° / Référence',d.ref)}
+      ${acRow('Agence UM',d.agence)}${acRow('ATC / Commercial',d.atc)}
+      ${acRow('Métreur BE',d.metreur)}${acRow('Entreprise',d.entreprise)}
+      ${acRow('CP + Commune',[d.cp,d.ville].filter(Boolean).join(' '))}
+      ${acRow('Zone sismique',zv.s,'c')}
+    </div>
+    <div class="fsh g">Zones charpente</div>
+    <div class="idg">
+      ${acRow('Zone vent (EN1991-1-4)',zv.v,'c')}${acRow('Zone neige (EN1991-1-3)',zv.n,'c')}
+      ${acRow('Zone climatique RE2020',zv.c,'c')}
+    </div>
+    <div class="fsh g">Hypothèses de calcul</div>
+    <div class="idg">
+      ${acRow('Pente (%)',f.pente)}${acRow('Type de tuile',f.tuile)}
+      ${acRow('Panneaux sandwich',f.sandwich?'Oui':'Non')}${acRow('Épaisseur murs (cm)',f.murs)}
+      ${acRow('Type de plafond',f.plafond,'c')}${acRow('Épaisseur laine (cm)',f.laine)}
+    </div>
+    <div class="fsh g">Pied de ferme — charpente</div>
+    <div class="idg">
+      ${acRow('Pose mi-mur',f.miMur?'Oui':'Non')}${acRow('Type de génoise',f.genoise)}
+      ${acRow('Débord',f.debord?'Oui':'Non')}${acRow('Type de débord',f.typeDebord)}
+      ${acRow('Cote de débord (cm)',f.cote)}
+    </div>
+    <div class="fsh g">Informations</div>
+    <div class="idg">
+      ${acRow('Conduit de cheminée',f.cheminee?'Oui':'Non')}${acRow('Partie tradi',f.tradi?'Oui':'Non')}
+      ${acRow('Zone tradi brute',f.zBrute)}${acRow('Zone tradi raboté',f.zRabote)}
+    </div>
+    <div class="fsh g">Accessoires</div>
+    <div class="idg">
+      ${acRow('Accessoires métalliques',f.metal?'Oui':'Non')}${acRow('Contreventement',f.contrev?'Oui':'Non')}
+      ${acRow('Liteau',f.liteau?'Oui':'Non')}${acRow('Demi-liteaux',f.demiLiteaux?'Oui':'Non')}
+      ${acRow('Film sous toiture',f.film?'Oui':'Non')}${acRow('OSB 12mm',f.osb?'Oui':'Non')}
+    </div>`;
+  }
+
+  return`
+<div class="hd">
+  <div class="hb"><img src="data:image/png;base64,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" alt="UM" style="height:34px"><div><div class="ht">UNION MATÉRIAUX — Bureau d'Études</div><div class="hs">Fiches fournisseurs · ${d.nom||'Dossier en cours'}</div></div></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn bs bsm" id="btnback">← Retour saisie</button>
+    <button class="btn bo bsm" onclick="window.print()">🖨 Imprimer cette fiche</button>
+  </div>
+</div>
+<div class="stps"><div class="stp dn"><div class="sn">✓</div>Saisie commune</div><div class="stp act"><div class="sn">2</div>Fiches fournisseurs</div></div>
+<div class="ct">
+  <div class="fl">
+    <div class="fsb">
+      <div style="font-size:10px;font-weight:700;color:#BBB;text-transform:uppercase;letter-spacing:.5px;padding:2px 0 8px">Fournisseurs</div>
+      ${sv.map(k=>`<div class="ft ${k===af?'act':''}" data-tab="${k}">${FL[k]}</div>`).join('')}
+      <div style="margin-top:12px;padding:10px;background:#F9F9F7;border-radius:8px;font-size:11px;color:#AAA;line-height:1.6">Naviguer · Ctrl+P pour imprimer la fiche active</div>
+    </div>
+    <div class="fcard">
+      <div class="ftb${isFer?' fer':''}">
+        <div><h1>FICHE DE RENSEIGNEMENTS — ${isFer?'FERMETTE':(af==='NEO'?'NEO / FABRE':af)}</h1><p>Union Matériaux · Bureau d'Études · ${today}</p></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <img src="data:image/png;base64,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" alt="UM" style="height:44px;opacity:.95">
+          <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;text-align:right;font-size:11px">
+            <div style="font-size:9px;opacity:.65;letter-spacing:.8px;text-transform:uppercase;font-weight:600">UNION MATÉRIAUX</div>
+            <div style="font-weight:700;margin-top:2px">${d.ref||'—'}</div>
+            <div style="opacity:.8">${d.agence||'—'}</div>
+          </div>
+        </div>
+      </div>
+      ${ficheBody}
+      <div class="fsh g">Observations</div>
+      <textarea class="obs-ta" data-obs="${af}" placeholder="À compléter avant envoi au fournisseur...">${S.obs[af]||''}</textarea>
+      <div class="lgnote">🔵 Auto depuis Saisie Commune &nbsp;|&nbsp; 🟢 Calculé auto &nbsp;|&nbsp; Modifiable directement si cas spécifique dossier</div>
+    </div>
+  </div>
+</div>`;
+}
+
+// ─── RENDER & EVENTS ──────────────────────────────────────────────────────────
+function render(){
+  document.getElementById('app').innerHTML=S.view==='form'?renderForm():renderFiches();
+  attachEvents();
+}
+
+function attachEvents(){
+  // Champs dossier — PAS de re-render pour éviter perte de focus
+  document.querySelectorAll('[df]').forEach(el=>{
+    el.addEventListener('input',e=>{
+      const k=e.target.getAttribute('df');
+      S.dossier[k]=e.target.value;
+      // CP: mise à jour ciblée des zones SANS re-render
+      if(k==='cp'){
+        const dept=e.target.value.slice(0,2);
+        const vs=ZS[dept]||'';
+        const vv=ZV[dept]?`Zone ${ZV[dept]}`:'';
+        const vn=ZN[dept]||'';
+        const vc=ZC[dept]||'';
+        const zs=document.getElementById('z-s');
+        const zv=document.getElementById('z-v');
+        const zn=document.getElementById('z-n');
+        const zc=document.getElementById('z-c');
+        if(zs)zs.value=vs||(e.target.value.length>=2?'⚠ Hors périmètre':'Saisir le CP →');
+        if(zv)zv.value=vv||'—';
+        if(zn)zn.value=vn||'—';
+        if(zc)zc.value=vc||'—';
+      }
+    });
+  });
+
+  // Infos communes
+  document.querySelectorAll('[di]').forEach(el=>el.addEventListener('change',e=>S.infos[e.target.getAttribute('di')]=e.target.value));
+  document.querySelectorAll('[dib]').forEach(el=>el.addEventListener('change',e=>S.infos[e.target.getAttribute('dib')]=e.target.checked));
+
+  // Fermette champs
+  document.querySelectorAll('[df2]').forEach(el=>el.addEventListener('input',e=>S.fermette[e.target.getAttribute('df2')]=e.target.value));
+  document.querySelectorAll('[df2-b]').forEach(el=>el.addEventListener('change',e=>{
+    const k=e.target.getAttribute('df2-b');
+    S.fermette[k]=(e.target.tagName==='SELECT')?e.target.value==='1':e.target.checked;
+    // Recalc alerte demi-liteaux
+    const alertEl=document.querySelector('.alert-box');
+    if(alertEl){alertEl.style.display=((S.fermette.film||S.fermette.osb)&&!S.fermette.demiLiteaux)?'':'none';}
+    if(!alertEl&&(S.fermette.film||S.fermette.osb)&&!S.fermette.demiLiteaux){
+      const sec=el.closest('.fm-sec');
+      if(sec){const ab=document.createElement('div');ab.className='alert-box';ab.textContent='⚠️ Film et/ou OSB sélectionné — les Demi-liteaux sont obligatoires';sec.appendChild(ab);}
+    }
+  }));
+
+  // Fournisseur toggles
+  document.querySelectorAll('[data-four]').forEach(el=>el.addEventListener('click',e=>{
+    const k=e.currentTarget.dataset.four;
+    S.four[k]=!S.four[k];
+    // Mise à jour ciblée des cards + bouton générer
+    document.getElementById('four-cards').innerHTML=renderFourCards();
+    document.querySelectorAll('[data-four]').forEach(el2=>el2.addEventListener('click',e2=>{
+      const k2=e2.currentTarget.dataset.four;S.four[k2]=!S.four[k2];
+      document.getElementById('four-cards').innerHTML=renderFourCards();
+      attachFourEvents();
+      updateSelBadge();
+      toggleFermetteCard();
+    }));
+    attachFourEvents();
+    updateSelBadge();
+    toggleFermetteCard();
+  }));
+
+  // Niveaux — re-render du tableau seulement si changement de type
+  document.querySelectorAll('[data-niv]').forEach(el=>el.addEventListener('change',e=>{
+    if(e.target.disabled)return;
+    const i=+e.target.dataset.niv,k=e.target.dataset.nk;
+    S.niveaux[i][k]=e.target.value;
+    if(k==='type'){
+      const wrap=document.getElementById('niv-table-wrap');
+      if(wrap){wrap.innerHTML=renderNivTable();attachNivEvents();}
+    }
+  }));
+
+  // Bouton générer
+  const bg=document.getElementById('btngen');
+  if(bg)bg.addEventListener('click',()=>{const sv=gsel();if(!sv.length)return;S.activeF=sv[0];S.view='fiches';render();window.scrollTo(0,0);});
+
+  // Bouton retour
+  const bb=document.getElementById('btnback');
+  if(bb)bb.addEventListener('click',()=>{S.view='form';render();window.scrollTo(0,0);});
+
+  // Tabs fiches
+  document.querySelectorAll('[data-tab]').forEach(el=>el.addEventListener('click',e=>{S.activeF=e.currentTarget.dataset.tab;render();}));
+
+  // Observations
+  document.querySelectorAll('[data-obs]').forEach(el=>el.addEventListener('input',e=>{S.obs[e.target.dataset.obs]=e.target.value;}));
+  // Options fiches
+  document.querySelectorAll('[data-opt]').forEach(el=>el.addEventListener('change',e=>{const f=e.target.dataset.opt,k=e.target.dataset.ok;if(S.opts[f])S.opts[f][k]=e.target.value;}));
+}
+
+function attachFourEvents(){
+  document.querySelectorAll('[data-four]').forEach(el=>el.addEventListener('click',e=>{
+    const k=e.currentTarget.dataset.four;S.four[k]=!S.four[k];
+    document.getElementById('four-cards').innerHTML=renderFourCards();
+    attachFourEvents();updateSelBadge();toggleFermetteCard();
+  }));
+}
+
+function attachNivEvents(){
+  document.querySelectorAll('[data-niv]').forEach(el=>el.addEventListener('change',e=>{
+    if(e.target.disabled)return;
+    const i=+e.target.dataset.niv,k=e.target.dataset.nk;
+    S.niveaux[i][k]=e.target.value;
+    if(k==='type'){const wrap=document.getElementById('niv-table-wrap');if(wrap){wrap.innerHTML=renderNivTable();attachNivEvents();}}
+  }));
+}
+
+function updateSelBadge(){
+  const sv=gsel();
+  const bg=document.getElementById('btngen');
+  if(bg){bg.disabled=sv.length===0;bg.style.opacity=sv.length===0?'0.4':'1';bg.style.cursor=sv.length===0?'not-allowed':'pointer';}
+}
+
+function toggleFermetteCard(){
+  const fc=document.getElementById('card-fermette');
+  if(fc)fc.style.display=S.four.FERMETTE?'':'none';
+}
+
+document.addEventListener('DOMContentLoaded',render);
+</script>
+</body>
+</html>
